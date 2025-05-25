@@ -40,8 +40,7 @@ function App() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize
       .join(' ');                      // Join with space
   }
-
-
+  if(error){}
   const handleSubmit = async (e) => {
     e.preventDefault();
 
