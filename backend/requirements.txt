@@ -1,9 +1,11 @@
 PyPDF2
 python-docx
 nltk
-spacy
 textblob
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz
 Flask==2.3.3
 Flask-CORS==4.0.0
 gunicorn==21.2.0
+numpy==1.24.3
+spacy==3.6.1
+thinc==8.1.12
