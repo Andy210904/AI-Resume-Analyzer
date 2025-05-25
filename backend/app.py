@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import PyPDF2
@@ -11,16 +11,14 @@ import json
 from textblob import TextBlob
 from industry_analyzer import IndustryAnalyzer
 
-# Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-# Load spaCy model
 nlp = spacy.load('en_core_web_sm')
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -85,9 +83,6 @@ def analyze_resume(text,filename=None):
         "sections": {},
         "suggestions": [],
         "strengths": [],
-        # "ats_issues": [],
-        # "ats_suggestions": [],
-        # "ats_friendly": [],
         "word_count": len(word_tokenize(text))
     }
     
@@ -194,12 +189,6 @@ def analyze_resume(text,filename=None):
     else:
         results["strengths"].append("Resume has an appropriate length")
         
-    # ats_analysis = check_ats_optimization(text, filename)
-    # for i in ats_analysis["issues"]:
-    #     results["ats_issues"].append(i)
-    # for i in ats_analysis["suggestions"]:
-    #     results["ats_suggestions"].append(i)
-    # results["ats_friendly"].append(ats_analysis['ats_friendly'])
     return results
 
 def analyze_education(text):
@@ -421,65 +410,7 @@ def check_action_verbs(text):
         "count": verb_count,
         "suggested_verbs": action_verbs[:10]  # Return some suggested verbs
     }
-# def check_ats_optimization(text,filename=None):
-#     """Check if the resume is optimized for Applicant Tracking Systems"""
-#     issues = []
-#     suggestions = []
-    
-#     # Check for common formatting issues
-#     if len(text) < 300:
-#         issues.append("Resume may be too short for ATS to extract meaningful information")
-#         suggestions.append("Expand your resume with more detailed work experience and skills")
-    
-#     # Check for special characters that might confuse ATS
-#     special_chars = ['•', '★', '➤', '✓', '✔', '✰']
-#     for char in special_chars:
-#         if char in text:
-#             issues.append(f"Found special character '{char}' which may cause issues with some ATS systems")
-#             suggestions.append("Replace special characters with standard ASCII alternatives like '-' or '*'")
-    
-#     # Check for tables (crude approximation by looking for multiple spaces)
-#     if '    ' in text:
-#         issues.append("Possible use of tables or extensive spacing detected")
-#         suggestions.append("Avoid tables, use simple bullet points instead")
-    
-#     # Check for headers and sections
-#     common_headers = ['experience', 'education', 'skills', 'projects', 'certifications']
-#     missing_headers = [header for header in common_headers if header.lower() not in text.lower()]
-#     if missing_headers:
-#         issues.append(f"Missing standard section headers: {', '.join(missing_headers)}")
-#         suggestions.append("Include standard section headers that ATS systems look for")
-    
-#     # Check for contact information
-#     contact_patterns = [
-#         r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',  # Email
-#         r'(\+?\d{1,3}[\s\-\.]?)?(\(?\d{3,5}\)?[\s\-\.]?)?[\d\s\-\.]{6,10}',  # Phone number
-#         r'linkedin',  # LinkedIn
-#         r'github'  # GitHub
-#     ]
-    
-#     missing_contact = []
-#     if not re.search(contact_patterns[0], text):
-#         missing_contact.append("email")
-#     if not re.search(contact_patterns[1], text):
-#         missing_contact.append("phone number")
-#     if not re.search(contact_patterns[2], text):
-#         missing_contact.append("LinkedIn profile")
-    
-#     if missing_contact:
-#         issues.append(f"Missing contact information: {', '.join(missing_contact)}")
-#         suggestions.append("Include complete contact information at the top of your resume")
-    
-#     # Check filename
-#     if filename in locals():
-#         if "resume" not in filename.lower() and "cv" not in filename.lower():
-#             suggestions.append("Name your resume file with your name and the word 'resume' (e.g., 'John_Smith_Resume.pdf')")
-    
-#     return {
-#         'issues': issues,
-#         'suggestions': suggestions,
-#         'ats_friendly': len(issues) == 0
-#     }
+
 def extract_keywords(text):
     # Extract potential keywords using NLP
     doc = nlp(text)
@@ -491,10 +422,11 @@ def extract_keywords(text):
     stopwords = nltk.corpus.stopwords.words('english')
     keywords = [word for word in keywords if word not in stopwords and len(word) > 3]
     
-    # Return unique keywords
-    return list(set(keywords))[:20]  # Return top 20 unique keywords
+    return list(set(keywords))[:20]  
 
-@app.route('/analyze', methods=['POST'])
+
+
+@app.route('/api/analyze', methods=['POST'])
 def analyze():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -541,5 +473,13 @@ def analyze():
     
     return jsonify({"error": "File type not allowed"}), 400
 
+@app.route('/')
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory(app.static_folder, 'index.html')
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))

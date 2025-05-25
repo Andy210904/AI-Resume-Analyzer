@@ -33,6 +33,15 @@ function App() {
     }
   };
 
+  function formatIndustry(industry) {
+    if (!industry) return "";
+    return industry
+      .split('_')                      // Split at underscores
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize
+      .join(' ');                      // Join with space
+  }
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,7 +63,7 @@ function App() {
     formData.append('job_role', selectedJob); // add job role
 
     try {
-      const response = await axios.post('http://localhost:5000/analyze', formData, {
+      const response = await axios.post('http://localhost:5000/api/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -167,8 +176,8 @@ return (
     <div className="container-fluid">
       <div className="row mt-5">
         <div className="col-12 text-center">
-          <h1>AI Resume Analyzer</h1>
-          <p className="lead">Upload your resume to get AI-powered analysis and suggestions</p>
+          <h1>Resume Analyzer</h1>
+          <p className="lead">Upload your resume to get detailed analysis and personalized suggestions</p>
         </div>
       </div>
 
@@ -232,11 +241,11 @@ return (
       )}
 
       {results && !loading && (
-      <div className='container-fluid'>
-        <div className="row mt-4">
-          <div className="col-md-6">
+      <div className='container-fluid h-screen p-4'>
+        <div className="row h-full">
+          <div className="col-md-6 mt-4 h-full flex flex-col">
             {/* General Analysis Card */}
-            <div className="card mb-4">
+            <div className="card">
               <div className="card-header">
                 <h2>Analysis Results</h2>
               </div>
@@ -301,11 +310,11 @@ return (
             </div>
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 h-full flex flex-col mt-4">
             {/* Industry Analysis Card */}
-            <div className="card mb-4">
+            <div className="card h-100">
               <div className="card-header">
-                <h2>Industry Analysis: {results.industry_analysis?.industry}</h2>
+                <h2>Industry Analysis: {formatIndustry(results.industry_analysis?.industry)}</h2>
               </div>
               <div className="card-body">
                 <div className="text-center mb-4">

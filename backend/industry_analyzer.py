@@ -23,10 +23,11 @@ class IndustryAnalyzer:
                     "tested", "automated", "integrated", "solved", "improved"
                 ],
                 "achievements_keywords": [
-                    "improved performance", "reduced", "optimized", "increased", 
-                    "led team", "developed new", "implemented", "designed",
-                    "reduced load time", "improved efficiency", "decreased latency"
+                    "hackathon", "coding","competition", "ideathon", "optimization", "deployment", 
+                    "refactoring", "scalability", "automation", "integration", "debugging",
+                    "performance", "contribution", "latency", "efficiency", "innovation"
                 ]
+
             },
             "data_scientist": {
                 "required_skills": [
@@ -46,9 +47,10 @@ class IndustryAnalyzer:
                     "trained", "evaluated", "optimized", "designed", "deployed"
                 ],
                 "achievements_keywords": [
-                    "increased accuracy", "reduced error", "improved model", "analyzed data",
-                    "built model", "increased revenue", "decreased costs", "identified patterns",
-                    "streamlined process", "automated analysis", "discovered insights"
+                    "hackathon", "coding","competition", "ideathon", "optimization", "deployment", 
+                    "refactoring", "scalability", "automation", "integration", "debugging",
+                    "performance", "contribution", "latency", "efficiency", "innovation",
+                    "accuracy", "insights", "prediction", "analysis", "visualization",
                 ]
             },
             "marketing": {
@@ -69,10 +71,11 @@ class IndustryAnalyzer:
                     "executed", "optimized", "analyzed", "strategized", "produced"
                 ],
                 "achievements_keywords": [
-                    "increased traffic", "grew audience", "improved conversion", "reduced cost",
-                    "increased roi", "grew revenue", "expanded reach", "improved engagement",
-                    "boosted sales", "enhanced brand", "decreased cpa", "increased leads"
+                    "conversion", "traffic", "engagement", "growth", "reach", 
+                    "branding", "roi", "campaign", "strategy", "leads",
+                    "acquisition", "retention", "optimization", "content", "promotion"
                 ]
+
             },
             "finance": {
                 "required_skills": [
@@ -91,10 +94,11 @@ class IndustryAnalyzer:
                     "allocated", "assessed", "calculated", "evaluated", "streamlined"
                 ],
                 "achievements_keywords": [
-                    "reduced costs", "increased profit", "improved efficiency", "managed budget",
-                    "saved", "decreased expenses", "increased revenue", "identified opportunities",
-                    "streamlined process", "reduced risk", "improved accuracy"
+                    "profit", "costs", "savings", "forecast", "budgeting", 
+                    "modeling", "valuation", "compliance", "accuracy", "investment",
+                    "reporting", "auditing", "efficiency", "risk", "regulation"
                 ]
+
             }
         }
     
@@ -151,19 +155,19 @@ class IndustryAnalyzer:
         # Generate suggestions
         suggestions = []
         
-        if skills_score < 70:
+        if skills_score < 80:
             top_missing = missing_skills[:5]  # Get top 5 missing skills
-            suggestions.append(f"Add more {industry} skills to your resume. Consider including: {', '.join(top_missing)}")
+            suggestions.append(f"Add more skills to your resume. Consider including: {', '.join(top_missing)}")
         
-        if sections_score < 70:
+        if sections_score < 80:
             top_missing_sections = missing_sections[:3]  # Get top 3 missing sections
             suggestions.append(f"Include these important sections: {', '.join(top_missing_sections)}")
         
-        if verbs_score < 70:
+        if verbs_score < 80:
             top_verbs = [v for v in industry_data["action_verbs"][:5] if v not in found_verbs]
             suggestions.append(f"Use stronger action verbs like: {', '.join(top_verbs)}")
         
-        if achievements_score < 70:
+        if achievements_score < 80:
             suggestions.append("Focus more on quantifiable achievements relevant to your industry")
         
         return {
