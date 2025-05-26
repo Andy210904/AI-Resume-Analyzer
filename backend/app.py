@@ -14,6 +14,7 @@ from industry_analyzer import IndustryAnalyzer
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('punkt_tab')
 
 nlp = spacy.load('en_core_web_sm')
 
